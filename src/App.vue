@@ -1,27 +1,25 @@
 <template>
-  <div id="app">
-    <h2>Search manuscripts</h2>
+  <div id="app" class="hfeed site">
+    <NavigationBar></NavigationBar>
     <SearchManuscripts></SearchManuscripts>
+    <FooterBar></FooterBar>
+    <FooterImprint></FooterImprint>
   </div>
 </template>
 
 <script>
+import NavigationBar from "./components/NavigationBar";
 import SearchManuscripts from "./components/SearchManuscripts";
+import FooterBar from "./components/FooterBar";
+import FooterImprint from "./components/FooterImprint";
 
 export default {
   name: "App",
   components: {
+    NavigationBar,
     SearchManuscripts,
+    FooterBar,
+    FooterImprint
   },
 };
 </script>
-
-<style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

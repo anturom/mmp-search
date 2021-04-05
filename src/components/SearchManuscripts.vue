@@ -1,31 +1,87 @@
 <template>
-  <section>
-    <form>
-      <input
-        v-model.lazy="searchKeyword"
-        placeholder="Enter a search keyword"
-        id="searchInput"
-        type="text"
-      />
-      <button v-on:click="getData" id="searchButton" type="button">
-        Search
-      </button>
-    </form>
-    <p style="color: red">{{ error }}</p>
-    <p style="color: blue">{{ status }}</p>
-    <table>
-      <tr v-for="res in results" :key="res.title">
-        <td>
-          <a target="_blank" :href="res.url">{{ res.title }}</a>
-          <div>
-            <span style="margin: 0 10px" v-for="k in res.keywords" :key="k">{{
-              k
-            }}</span>
-          </div>
-        </td>
-      </tr>
-    </table>
-  </section>
+  <div class="wrapper" id="single-wrapper">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 content-area">
+          <main class="site-main">
+            <article>
+              <header class="entry-header">
+                <div class="entry-top-thumbnail">
+                  <img src="middle-ages.jpg" alt="" class="src" />
+                </div>
+                <h1 class="entry-title">Search manuscripts</h1>
+              </header>
+              <div class="entry-content">
+                <form class="input-group mx-auto mt-3 mb-3">
+                  <input
+                    id="search-input"
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter a search keyword"
+                    aria-label="Recipient's username"
+                    aria-describedby="search-button"
+                    v-model.lazy="searchKeyword"
+                  />
+                  <div class="input-group-append">
+                    <button
+                      id="search-button"
+                      type="button"
+                      class="btn btn-primary"
+                      v-on:click="getData"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-search"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+
+                <p v-if="error" class="alert alert-danger" style="color: red">
+                  {{ error }}
+                </p>
+                <p v-if="status" class="alert alert-info" role="alert">
+                  {{ status }}
+                </p>
+                <table v-if="results.length > 0" class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">Title</th>
+                      <!-- <th scope="col">#</th>
+                      <th scope="col">#</th> -->
+                    </tr>
+                  </thead>
+                  <tr v-for="res in results" :key="res.title">
+                    <td>
+                      <a target="_blank" :href="res.url">{{ res.title }}</a>
+                      <div>
+                        <span
+                          class="badge badge-pill badge-info m-1"
+                          v-for="k in res.keywords"
+                          :key="k"
+                          >{{ k }}</span
+                        >
+                      </div>
+                    </td>
+                    <!-- <td></td>
+                    <td></td> -->
+                  </tr>
+                </table>
+              </div>
+            </article>
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
