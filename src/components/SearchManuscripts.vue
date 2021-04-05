@@ -55,7 +55,7 @@
                   <thead>
                     <tr>
                       <th scope="col">Title</th>
-                      <th scope="col">Year</th>
+                      <th scope="col" class="w-10">Year</th>
                     </tr>
                   </thead>
                   <tr v-for="res in results" :key="res.title">
@@ -99,30 +99,34 @@ export default {
      * Fetches data from the remote API.
      */
     getData() {
-      this.isLoading = true;
-      this.status = this.isLoading === true ? "Loading..." : "";
-      this.error = null;
-      let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?zitat=${this.searchKeyword}&limit=${this.perPage}`;
-      fetch(url)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-        })
-        .then((data) => {
-          console.log(data);
-          this.isLoading = false;
-          // Update the status message
-          this.status = data.count
-            ? `The search returned ${data.count} result(s).`
-            : "The search returned no results.";
-          this.processData(data);
-        })
-        .catch((error) => {
-          console.log(error);
-          this.isLoading = false;
-          this.error = "Failed to fetch data. Please try again later.";
-        });
+      if (this.searchKeyword.length > 0) {
+        this.isLoading = true;
+        this.status = this.isLoading === true ? "Loading..." : "";
+        this.error = null;
+        let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?zitat=${this.searchKeyword}&limit=${this.perPage}`;
+        fetch(url)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            }
+          })
+          .then((data) => {
+            console.log(data);
+            this.isLoading = false;
+            // Update the status message
+            this.status = data.count
+              ? `The search returned ${data.count} result(s).`
+              : "The search returned no results.";
+            this.processData(data);
+          })
+          .catch((error) => {
+            console.log(error);
+            this.isLoading = false;
+            this.error = "Failed to fetch data. Please try again later.";
+          });
+      } else {
+        this.status = "Please enter a search keyword.";
+      }
     },
     /**
      * Converts the raw API data into a new array structure (for easier rendering).
@@ -134,7 +138,7 @@ export default {
           title: pt.display_label,
           keywords: this.extractKeywords(pt.key_word),
           url: this.getItemUrl(pt.url),
-          year: this.getDate(pt.text.start_date, pt.text.end_date)
+          year: this.getDate(pt.text.start_date, pt.text.end_date),
         });
       });
       this.results = results;
@@ -183,7 +187,7 @@ export default {
         }
       }
       return ret;
-    }
+    },
   },
 };
 </script>
