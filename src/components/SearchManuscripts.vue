@@ -7,7 +7,7 @@
             <article>
               <header class="entry-header">
                 <div class="entry-top-thumbnail">
-                  <img src="middle-ages.jpg" alt="" class="src" />
+                  <img src="middle-ages.jpg" alt="Middle Ages" class="src" />
                 </div>
                 <h1 class="entry-title">Search manuscripts</h1>
               </header>
@@ -45,17 +45,22 @@
                   </div>
                 </form>
 
-                <p v-if="error" class="alert alert-danger" style="color: red">
+                <p v-if="error" class="alert alert-danger" role="alert">
                   {{ error }}
                 </p>
                 <p v-if="status" class="alert alert-info" role="alert">
                   {{ status }}
                 </p>
-                <table v-if="results.length > 0" class="table table-striped">
+
+                <div v-if="isLoading" class="text-center">
+                  <img src="spinner.jpg" alt="Loading..." />
+                </div>
+
+                <table v-if="results.length > 0 && !isLoading" class="table table-striped">
                   <thead>
                     <tr>
-                      <th scope="col">Title</th>
-                      <th scope="col" class="w-10">Year</th>
+                      <th scope="col" style="width: 90%">Title</th>
+                      <th scope="col" style="width: 10%">Year</th>
                     </tr>
                   </thead>
                   <tr v-for="res in results" :key="res.title">
@@ -101,7 +106,7 @@ export default {
     getData() {
       if (this.searchKeyword.length > 0) {
         this.isLoading = true;
-        this.status = this.isLoading === true ? "Loading..." : "";
+        this.status = null;
         this.error = null;
         let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?zitat=${this.searchKeyword}&limit=${this.perPage}`;
         fetch(url)
