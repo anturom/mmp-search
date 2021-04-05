@@ -55,8 +55,7 @@
                   <thead>
                     <tr>
                       <th scope="col">Title</th>
-                      <!-- <th scope="col">#</th>
-                      <th scope="col">#</th> -->
+                      <th scope="col">Year</th>
                     </tr>
                   </thead>
                   <tr v-for="res in results" :key="res.title">
@@ -71,8 +70,7 @@
                         >
                       </div>
                     </td>
-                    <!-- <td></td>
-                    <td></td> -->
+                    <td>{{ res.year }}</td>
                   </tr>
                 </table>
               </div>
@@ -136,6 +134,7 @@ export default {
           title: pt.display_label,
           keywords: this.extractKeywords(pt.key_word),
           url: this.getItemUrl(pt.url),
+          year: this.getDate(pt.text.start_date, pt.text.end_date)
         });
       });
       this.results = results;
@@ -166,6 +165,25 @@ export default {
       // strip the trailing / character
       return retVal.slice(0, retVal.length - 1);
     },
+    /**
+     * Returns the item's date range, if both start and end date exist.
+     * Otherwise returns either start or end date, whichever of the two exists.
+     */
+    getDate(start, end) {
+      let ret = "";
+      if (start && end) {
+        ret = start + "-" + end;
+      } else {
+        if (start && !end) {
+          ret = start;
+        } else {
+          if (!start && end) {
+            ret = end;
+          }
+        }
+      }
+      return ret;
+    }
   },
 };
 </script>
