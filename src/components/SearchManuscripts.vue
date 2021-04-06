@@ -27,7 +27,7 @@
                       id="search-button"
                       type="button"
                       class="btn btn-primary"
-                      v-on:click="getData"
+                      v-on:click="getData()"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +56,10 @@
                   <img src="spinner.jpg" alt="Loading..." />
                 </div>
 
-                <table v-if="results.length > 0 && !isLoading" class="table table-striped">
+                <table
+                  v-if="results.length > 0 && !isLoading"
+                  class="table table-striped"
+                >
                   <thead>
                     <tr>
                       <th scope="col" style="width: 90%">Title</th>
@@ -78,6 +81,12 @@
                     <td>{{ res.year }}</td>
                   </tr>
                 </table>
+
+                <pagination-controls
+                  :totalItems="totalItems"
+                  :perPage="perPage"
+                  @page-changed="getData($event)"
+                ></pagination-controls>
               </div>
             </article>
           </main>
@@ -88,27 +97,31 @@
 </template>
 
 <script>
+import PaginationControls from "./PaginationControls.vue";
 export default {
+  components: { PaginationControls },
   data() {
     return {
-      isLoading: false,
-      searchKeyword: "",
-      results: [],
-      perPage: 20,
-      error: "",
-      status: "",
+      isLoading: false, // True while fetching data from the remote server; false otherwise
+      searchKeyword: "", // The value entered by the user in the search input
+      results: [], // The list of results to be rendered on the current page; this gets updated after each API call
+      perPage: 20, // The number of records to show per page; it's a fixed value for now
+      totalItems: 0, // The total number of items matching this search; this gets updated on each API call
+      error: "", // Sets some error text to show to the user (will be rendered as "danger" alert)
+      status: "", // Sets some information message to show to the user (will be rendered as "info" alert)
     };
   },
   methods: {
     /**
-     * Fetches data from the remote API.
+     * Fetches data from the remote API, beginning with the offset supplied in the
+     * 'offset' argument.
      */
-    getData() {
+    getData(offset = 0) {
       if (this.searchKeyword.length > 0) {
         this.isLoading = true;
         this.status = null;
         this.error = null;
-        let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?zitat=${this.searchKeyword}&limit=${this.perPage}`;
+        let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?zitat=${this.searchKeyword}&limit=${this.perPage}&offset=${offset}`;
         fetch(url)
           .then((response) => {
             if (response.ok) {
@@ -116,13 +129,10 @@ export default {
             }
           })
           .then((data) => {
-            console.log(data);
             this.isLoading = false;
-            // Update the status message
-            this.status = data.count
-              ? `The search returned ${data.count} result(s).`
-              : "The search returned no results.";
+            this.totalItems = data.count;
             this.processData(data);
+            this.status = data.count ? "" : "The search returned no results.";
           })
           .catch((error) => {
             console.log(error);
@@ -147,7 +157,6 @@ export default {
         });
       });
       this.results = results;
-      console.log(this.results);
     },
     /**
      * Extracts keyword info from the 'key_word' multi-dimensional array,
@@ -179,23 +188,20 @@ export default {
      * Otherwise returns either start or end date, whichever of the two exists.
      */
     getDate(start, end) {
-      let ret = "";
       if (start && end) {
-        ret = start + "-" + end;
+        return start + "-" + end;
       } else {
         if (start && !end) {
-          ret = start;
+          return start;
         } else {
           if (!start && end) {
-            ret = end;
+            return end;
+          } else {
+            return "";
           }
         }
       }
-      return ret;
     },
   },
 };
 </script>
-
-<style scoped>
-</style>
